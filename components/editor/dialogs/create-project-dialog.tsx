@@ -48,6 +48,7 @@ export function CreateProjectDialog({
         >
           <Input
             autoFocus
+            aria-label="Project name"
             value={name}
             placeholder="Project name"
             onChange={(event) => onNameChange(event.target.value)}
