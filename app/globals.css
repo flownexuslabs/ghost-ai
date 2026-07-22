@@ -48,7 +48,6 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 
     /* design-system semantic tokens, see context/ui-context.md */
-    --color-base: var(--bg-base);
     --color-surface: var(--bg-surface);
     --color-elevated: var(--bg-elevated);
     --color-subtle: var(--bg-subtle);
@@ -67,8 +66,23 @@
     --color-warning: var(--state-warning);
 }
 
+/*
+ * `base` is deliberately NOT registered as a --color- theme token above.
+ * Tailwind auto-derives text, border, and ring color utilities from every
+ * --color- key, and "base" collides with Tailwind's own text-base
+ * (font-size: 1rem) utility used throughout the shadcn components (dialog
+ * title, input, etc.), which made that text render in the bg-base color
+ * instead of its font size. This standalone utility gives us `bg-base`
+ * without that collision.
+ */
+@utility bg-base {
+    background-color: var(--bg-base);
+}
+
 :root,
 .dark {
+    color-scheme: dark;
+
     /* design-system palette (dark only, see context/ui-context.md) */
     --bg-base: #080809;
     --bg-surface: #111114;

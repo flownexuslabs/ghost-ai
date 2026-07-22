@@ -1,3 +1,5 @@
+import { EditorHome } from "@/components/editor/editor-home"
+
 export default function EditorPage() {
-  return <div className="p-4 text-copy-primary">Canvas placeholder</div>
+  return <EditorHome />
 }
