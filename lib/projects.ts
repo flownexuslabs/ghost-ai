@@ -8,11 +8,17 @@ export interface Project {
 }
 
 export function slugify(value: string): string {
-  return value
-    .trim()
+  const trimmed = value.trim()
+  const slug = trimmed
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
+
+  if (slug || !trimmed) {
+    return slug
+  }
+
+  return "project"
 }
 
 export const mockProjects: Project[] = [
