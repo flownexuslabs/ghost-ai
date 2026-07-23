@@ -5,12 +5,26 @@ import { useState } from "react"
 import { EditorNavbar } from "@/components/editor/editor-navbar"
 import { ProjectDialogsProvider } from "@/components/editor/project-dialogs-context"
 import { ProjectSidebar } from "@/components/editor/project-sidebar"
+import type { Project } from "@/lib/projects"
 
-export function EditorChrome({ children }: { children: React.ReactNode }) {
+interface EditorChromeProps {
+  children: React.ReactNode
+  ownedProjects: Project[]
+  sharedProjects: Project[]
+}
+
+export function EditorChrome({
+  children,
+  ownedProjects,
+  sharedProjects,
+}: EditorChromeProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
-    <ProjectDialogsProvider>
+    <ProjectDialogsProvider
+      ownedProjects={ownedProjects}
+      sharedProjects={sharedProjects}
+    >
       <div className="min-h-screen bg-base">
         <EditorNavbar
           isSidebarOpen={isSidebarOpen}

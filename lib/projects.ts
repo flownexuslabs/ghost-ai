@@ -1,11 +1,6 @@
-export type ProjectRole = "owner" | "collaborator"
+import type { Project } from "@/app/generated/prisma/client"
 
-export interface Project {
-  id: string
-  name: string
-  slug: string
-  role: ProjectRole
-}
+export type { Project }
 
 export function slugify(value: string): string {
   const trimmed = value.trim()
@@ -21,23 +16,6 @@ export function slugify(value: string): string {
   return "project"
 }
 
-export const mockProjects: Project[] = [
-  {
-    id: "1",
-    name: "Checkout Redesign",
-    slug: "checkout-redesign",
-    role: "owner",
-  },
-  {
-    id: "2",
-    name: "Notification Service",
-    slug: "notification-service",
-    role: "owner",
-  },
-  {
-    id: "3",
-    name: "Payments Platform",
-    slug: "payments-platform",
-    role: "collaborator",
-  },
-]
+export function generateRoomSuffix(): string {
+  return Math.random().toString(36).slice(2, 8)
+}

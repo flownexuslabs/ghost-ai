@@ -15,7 +15,7 @@ interface CreateProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   name: string
-  slug: string
+  roomId: string
   isLoading: boolean
   onNameChange: (name: string) => void
   onSubmit: () => void
@@ -25,7 +25,7 @@ export function CreateProjectDialog({
   open,
   onOpenChange,
   name,
-  slug,
+  roomId,
   isLoading,
   onNameChange,
   onSubmit,
@@ -54,7 +54,7 @@ export function CreateProjectDialog({
             onChange={(event) => onNameChange(event.target.value)}
           />
           <p className="px-0.5 text-xs text-copy-muted">
-            {slug ? `/${slug}` : "Enter a name to see the project URL"}
+            {roomId ? `/${roomId}` : "Enter a name to see the project URL"}
           </p>
           <DialogFooter className="mt-2">
             <Button type="submit" disabled={!name.trim() || isLoading}>

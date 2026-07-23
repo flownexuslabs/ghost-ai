@@ -5,11 +5,12 @@ import { createContext, useContext } from "react"
 import { CreateProjectDialog } from "@/components/editor/dialogs/create-project-dialog"
 import { DeleteProjectDialog } from "@/components/editor/dialogs/delete-project-dialog"
 import { RenameProjectDialog } from "@/components/editor/dialogs/rename-project-dialog"
-import { useProjectDialogs } from "@/hooks/use-project-dialogs"
+import { useProjectActions } from "@/hooks/use-project-actions"
 import type { Project } from "@/lib/projects"
 
 interface ProjectDialogsContextValue {
-  projects: Project[]
+  ownedProjects: Project[]
+  sharedProjects: Project[]
   openCreateDialog: () => void
   openRenameDialog: (project: Project) => void
   openDeleteDialog: (project: Project) => void
@@ -19,17 +20,22 @@ const ProjectDialogsContext = createContext<ProjectDialogsContextValue | null>(
   null
 )
 
+interface ProjectDialogsProviderProps {
+  children: React.ReactNode
+  ownedProjects: Project[]
+  sharedProjects: Project[]
+}
+
 export function ProjectDialogsProvider({
   children,
-}: {
-  children: React.ReactNode
-}) {
+  ownedProjects,
+  sharedProjects,
+}: ProjectDialogsProviderProps) {
   const {
-    projects,
     dialogType,
     activeProject,
     name,
-    slug,
+    roomId,
     isLoading,
     setName,
     openCreateDialog,
@@ -39,11 +45,17 @@ export function ProjectDialogsProvider({
     submitCreate,
     submitRename,
     submitDelete,
-  } = useProjectDialogs()
+  } = useProjectActions()
 
   return (
     <ProjectDialogsContext.Provider
-      value={{ projects, openCreateDialog, openRenameDialog, openDeleteDialog }}
+      value={{
+        ownedProjects,
+        sharedProjects,
+        openCreateDialog,
+        openRenameDialog,
+        openDeleteDialog,
+      }}
     >
       {children}
       <CreateProjectDialog
@@ -52,7 +64,7 @@ export function ProjectDialogsProvider({
           if (!open && !isLoading) closeDialog()
         }}
         name={name}
-        slug={slug}
+        roomId={roomId}
         isLoading={isLoading}
         onNameChange={setName}
         onSubmit={submitCreate}
