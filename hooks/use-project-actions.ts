@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 
-import { generateRoomSuffix, slugify } from "@/lib/projects"
+import { ROOM_ID_MAX_LENGTH, generateRoomSuffix, slugify } from "@/lib/projects"
 import type { Project } from "@/lib/projects"
 
 type ProjectDialogType = "create" | "rename" | "delete" | null
@@ -19,6 +19,8 @@ export function useProjectActions() {
   const [isLoading, setIsLoading] = useState(false)
 
   const slug = slugify(name)
+    .slice(0, ROOM_ID_MAX_LENGTH - suffix.length - 1)
+    .replace(/-+$/, "")
   const roomId = slug ? `${slug}-${suffix}` : ""
 
   function openCreateDialog() {

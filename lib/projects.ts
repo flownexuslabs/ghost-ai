@@ -16,6 +16,8 @@ export function slugify(value: string): string {
   return "project"
 }
 
+export const ROOM_ID_MAX_LENGTH = 80
+
 export function generateRoomSuffix(): string {
-  return Math.random().toString(36).slice(2, 8)
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 10)
 }

@@ -54,7 +54,7 @@ export function CreateProjectDialog({
             onChange={(event) => onNameChange(event.target.value)}
           />
           <p className="px-0.5 text-xs text-copy-muted">
-            {roomId ? `/${roomId}` : "Enter a name to see the project URL"}
+            {roomId ? `/editor/${roomId}` : "Enter a name to see the project URL"}
           </p>
           <DialogFooter className="mt-2">
             <Button type="submit" disabled={!name.trim() || isLoading}>

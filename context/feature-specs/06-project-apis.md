@@ -16,7 +16,8 @@ Use the authenticated Clerk user ID as `ownerId`.
 When creating:
 
 - default missing project name to `Untitled Project`
-- use the schema’s existing ID strategy, do not add sequential IDs
+- use the schema’s existing ID strategy (cuid), do not add sequential IDs
+- exception: an optional client-supplied `id` is accepted and used as `Project.id` instead of the generated cuid, so the project id can double as the Liveblocks room id (see 07-wire-editor-home.md); falls back to the schema default if omitted or invalid
 
 Security:
 
