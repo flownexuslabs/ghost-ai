@@ -39,7 +39,10 @@ The canvas area should fill the remaining space.
 
 ## Scope
 
-Do not add real canvas logic, Liveblocks, AI chat, or sharing behavior yet.
+Do not add real canvas logic, Liveblocks, or AI chat yet. The share button is
+wired to open `ShareDialog` (see `09-share-dialog.md`) — the sharing feature
+itself is a separate spec, but its entry point from this shell is in scope
+and implemented.
 
 ## Check When Done
 
@@ -47,4 +50,5 @@ Do not add real canvas logic, Liveblocks, AI chat, or sharing behavior yet.
 - access helper exists outside the page component
 - `AccessDenied` is used for missing or unauthorized projects
 - workspace layout renders with current project context
+- share button opens `ShareDialog`
 - no TypeScript errors

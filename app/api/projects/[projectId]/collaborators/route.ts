@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { NextRequest, NextResponse } from "next/server"
 
+import { Prisma } from "@/app/generated/prisma/client"
 import { getClerkUsersByEmail } from "@/lib/clerk-users"
 import { EMAIL_PATTERN } from "@/lib/collaborators"
 import { getCurrentIdentity, getProjectForIdentity } from "@/lib/project-access"
@@ -86,9 +87,26 @@ export async function POST(
     )
   }
 
-  const collaborator = await prisma.projectCollaborator.create({
-    data: { projectId, email },
-  })
+  let collaborator
+  try {
+    collaborator = await prisma.projectCollaborator.create({
+      data: { projectId, email },
+    })
+  } catch (error) {
+    // The findUnique check above narrows the common case, but a concurrent
+    // invite for the same email can still race past it — the unique
+    // constraint on [projectId, email] is the actual source of truth.
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "Already a collaborator" },
+        { status: 409 }
+      )
+    }
+    throw error
+  }
 
   const enrichedByEmail = await getClerkUsersByEmail([email])
   const enriched = enrichedByEmail.get(email)

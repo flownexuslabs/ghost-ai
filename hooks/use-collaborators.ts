@@ -18,7 +18,7 @@ export function useCollaborators({ projectId, enabled }: UseCollaboratorsOptions
 
   const fetchCollaborators = useCallback(async () => {
     const response = await fetch(`/api/projects/${projectId}/collaborators`)
-    if (!response.ok) return null
+    if (!response.ok) throw new Error("Failed to load collaborators")
     return (await response.json()) as CollaboratorSummary[]
   }, [projectId])
 
@@ -27,9 +27,15 @@ export function useCollaborators({ projectId, enabled }: UseCollaboratorsOptions
 
     let cancelled = false
 
-    fetchCollaborators().then((data) => {
-      if (!cancelled && data) setCollaborators(data)
-    })
+    fetchCollaborators()
+      .then((data) => {
+        if (cancelled) return
+        setCollaborators(data)
+        setError(null)
+      })
+      .catch(() => {
+        if (!cancelled) setError("Failed to load collaborators")
+      })
 
     return () => {
       cancelled = true
@@ -58,6 +64,8 @@ export function useCollaborators({ projectId, enabled }: UseCollaboratorsOptions
         }
 
         setCollaborators(await fetchCollaborators())
+      } catch {
+        setError("Failed to invite collaborator")
       } finally {
         setIsInviting(false)
       }
@@ -73,14 +81,20 @@ export function useCollaborators({ projectId, enabled }: UseCollaboratorsOptions
           current?.filter((collaborator) => collaborator.id !== collaboratorId) ??
           current
       )
+      setError(null)
 
-      const response = await fetch(
-        `/api/projects/${projectId}/collaborators/${collaboratorId}`,
-        { method: "DELETE" }
-      )
-
-      if (!response.ok) {
+      try {
+        const response = await fetch(
+          `/api/projects/${projectId}/collaborators/${collaboratorId}`,
+          { method: "DELETE" }
+        )
+        if (!response.ok) {
+          setCollaborators(previous)
+          setError("Failed to remove collaborator")
+        }
+      } catch {
         setCollaborators(previous)
+        setError("Failed to remove collaborator")
       }
     },
     [collaborators, projectId]
@@ -88,7 +102,7 @@ export function useCollaborators({ projectId, enabled }: UseCollaboratorsOptions
 
   return {
     collaborators: collaborators ?? [],
-    isLoading: enabled && collaborators === null,
+    isLoading: enabled && collaborators === null && !error,
     isInviting,
     error,
     invite,

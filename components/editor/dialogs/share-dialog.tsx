@@ -73,27 +73,26 @@ export function ShareDialog({
 
         {isOwner && (
           <form
-            className="flex flex-col gap-1.5"
+            className="flex gap-2"
             onSubmit={(event) => {
               event.preventDefault()
               handleInvite()
             }}
           >
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-              />
-              <Button type="submit" disabled={!email.trim() || isInviting}>
-                <UserPlus />
-                {isInviting ? "Inviting..." : "Invite"}
-              </Button>
-            </div>
-            {error && <p className="text-sm text-error">{error}</p>}
+            <Input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <Button type="submit" disabled={!email.trim() || isInviting}>
+              <UserPlus />
+              {isInviting ? "Inviting..." : "Invite"}
+            </Button>
           </form>
         )}
+
+        {error && <p className="text-sm text-error">{error}</p>}
 
         <div className="flex max-h-64 flex-col gap-0.5 overflow-y-auto">
           {isLoading ? (

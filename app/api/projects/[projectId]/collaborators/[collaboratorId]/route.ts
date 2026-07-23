@@ -24,15 +24,16 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  const collaborator = await prisma.projectCollaborator.findUnique({
-    where: { id: collaboratorId },
+  // Scoped + atomic: avoids a separate existence check racing with the
+  // delete itself, and naturally rejects an id that belongs to another
+  // project without a second query.
+  const { count } = await prisma.projectCollaborator.deleteMany({
+    where: { id: collaboratorId, projectId },
   })
 
-  if (!collaborator || collaborator.projectId !== projectId) {
+  if (count === 0) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
-
-  await prisma.projectCollaborator.delete({ where: { id: collaboratorId } })
 
   return new NextResponse(null, { status: 204 })
 }
