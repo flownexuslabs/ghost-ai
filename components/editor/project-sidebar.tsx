@@ -1,6 +1,8 @@
 "use client"
 
 import { MoreVertical, Pencil, Plus, Trash2, X } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { useProjectDialogsContext } from "@/components/editor/project-dialogs-context"
 import { Button } from "@/components/ui/button"
@@ -17,16 +19,31 @@ import type { Project } from "@/lib/projects"
 interface ProjectSidebarProps {
   isOpen: boolean
   onClose: () => void
+  ownedProjects: Project[]
+  sharedProjects: Project[]
+  isLoading?: boolean
 }
 
-export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
-  const {
-    ownedProjects,
-    sharedProjects,
-    openCreateDialog,
-    openRenameDialog,
-    openDeleteDialog,
-  } = useProjectDialogsContext()
+export function ProjectSidebar({
+  isOpen,
+  onClose,
+  ownedProjects,
+  sharedProjects,
+  isLoading,
+}: ProjectSidebarProps) {
+  const { openCreateDialog, openRenameDialog, openDeleteDialog } =
+    useProjectDialogsContext()
+
+  const pathname = usePathname()
+  const currentRoomId = pathname.startsWith("/editor/")
+    ? pathname.slice("/editor/".length).split("/")[0]
+    : undefined
+
+  const defaultTab = sharedProjects.some(
+    (project) => project.id === currentRoomId
+  )
+    ? "shared"
+    : "mine"
 
   return (
     <>
@@ -58,7 +75,7 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
         </div>
 
         <Tabs
-          defaultValue="mine"
+          defaultValue={defaultTab}
           className="flex flex-1 flex-col overflow-hidden px-4 pt-3"
         >
           <TabsList className="w-full">
@@ -75,13 +92,16 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
           >
             {ownedProjects.length === 0 ? (
               <div className="flex flex-1 items-center justify-center">
-                <p className="text-sm text-copy-muted">No projects yet</p>
+                <p className="text-sm text-copy-muted">
+                  {isLoading ? "Loading projects…" : "No projects yet"}
+                </p>
               </div>
             ) : (
               ownedProjects.map((project) => (
                 <ProjectRow
                   key={project.id}
                   project={project}
+                  isActive={project.id === currentRoomId}
                   onRename={() => openRenameDialog(project)}
                   onDelete={() => openDeleteDialog(project)}
                 />
@@ -94,18 +114,24 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
           >
             {sharedProjects.length === 0 ? (
               <div className="flex flex-1 items-center justify-center">
-                <p className="text-sm text-copy-muted">No shared projects yet</p>
+                <p className="text-sm text-copy-muted">
+                  {isLoading ? "Loading projects…" : "No shared projects yet"}
+                </p>
               </div>
             ) : (
               sharedProjects.map((project) => (
-                <div
+                <Link
                   key={project.id}
-                  className="flex items-center rounded-lg px-2 py-1.5"
+                  href={`/editor/${project.id}`}
+                  className={cn(
+                    "flex items-center rounded-lg px-2 py-1.5 hover:bg-elevated",
+                    project.id === currentRoomId
+                      ? "bg-accent-dim text-brand"
+                      : "text-copy-primary"
+                  )}
                 >
-                  <span className="truncate text-sm text-copy-primary">
-                    {project.name}
-                  </span>
-                </div>
+                  <span className="truncate text-sm">{project.name}</span>
+                </Link>
               ))
             )}
           </TabsContent>
@@ -124,25 +150,38 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 
 function ProjectRow({
   project,
+  isActive,
   onRename,
   onDelete,
 }: {
   project: Project
+  isActive?: boolean
   onRename: () => void
   onDelete: () => void
 }) {
   return (
-    <div className="group flex items-center justify-between rounded-lg px-2 py-1.5 hover:bg-elevated">
-      <span className="truncate text-sm text-copy-primary">
+    <div
+      className={cn(
+        "group flex items-center justify-between rounded-lg hover:bg-elevated",
+        isActive && "bg-accent-dim"
+      )}
+    >
+      <Link
+        href={`/editor/${project.id}`}
+        className={cn(
+          "flex-1 truncate px-2 py-1.5 text-sm",
+          isActive ? "font-medium text-brand" : "text-copy-primary"
+        )}
+      >
         {project.name}
-      </span>
+      </Link>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
             <Button
               variant="ghost"
               size="icon-sm"
-              className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-popup-open:opacity-100 max-lg:opacity-100"
+              className="mr-1 shrink-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-popup-open:opacity-100 max-lg:opacity-100"
               aria-label={`${project.name} actions`}
             />
           }
