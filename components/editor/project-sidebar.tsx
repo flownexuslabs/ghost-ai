@@ -20,13 +20,13 @@ interface ProjectSidebarProps {
 }
 
 export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
-  const { projects, openCreateDialog, openRenameDialog, openDeleteDialog } =
-    useProjectDialogsContext()
-
-  const ownedProjects = projects.filter((project) => project.role === "owner")
-  const sharedProjects = projects.filter(
-    (project) => project.role === "collaborator"
-  )
+  const {
+    ownedProjects,
+    sharedProjects,
+    openCreateDialog,
+    openRenameDialog,
+    openDeleteDialog,
+  } = useProjectDialogsContext()
 
   return (
     <>
