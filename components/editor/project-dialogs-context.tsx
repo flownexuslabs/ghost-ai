@@ -9,8 +9,6 @@ import { useProjectActions } from "@/hooks/use-project-actions"
 import type { Project } from "@/lib/projects"
 
 interface ProjectDialogsContextValue {
-  ownedProjects: Project[]
-  sharedProjects: Project[]
   openCreateDialog: () => void
   openRenameDialog: (project: Project) => void
   openDeleteDialog: (project: Project) => void
@@ -22,14 +20,10 @@ const ProjectDialogsContext = createContext<ProjectDialogsContextValue | null>(
 
 interface ProjectDialogsProviderProps {
   children: React.ReactNode
-  ownedProjects: Project[]
-  sharedProjects: Project[]
 }
 
 export function ProjectDialogsProvider({
   children,
-  ownedProjects,
-  sharedProjects,
 }: ProjectDialogsProviderProps) {
   const {
     dialogType,
@@ -50,8 +44,6 @@ export function ProjectDialogsProvider({
   return (
     <ProjectDialogsContext.Provider
       value={{
-        ownedProjects,
-        sharedProjects,
         openCreateDialog,
         openRenameDialog,
         openDeleteDialog,
